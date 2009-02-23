@@ -1,1 +1,9 @@
-yo
+<% content_for :head do %>
+  <script type="text/javascript">
+    document.observe('dom:loaded', function() {
+      DrawDrawDraw.Draw.start();
+    });
+  </script>
+<% end %>
+
+<div id="canvas_container"></div>
