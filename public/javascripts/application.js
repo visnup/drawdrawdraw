@@ -57,6 +57,8 @@ DrawDrawDraw.Draw = Class.create({
     var p = this._getPoint(e);
     this._ctx.lineTo(p.x, p.y);
     this._ctx.stroke();
+    this._ctx.beginPath();
+    this._ctx.moveTo(p.x, p.y);
   },
 
   _getPoint: function(e) {
@@ -74,15 +76,12 @@ DrawDrawDraw.Draw = Class.create({
 
       var params = { 'canvas[data]': url };
       Object.extend(params, DrawDrawDraw.AuthenticityToken);
-
       var r = new Ajax.Request('/canvases.json', {
         parameters: params
       });
     } else {
       alert("Can't save! Oh NO!");
     }
-
-    return false;
   },
 
   _clear: function() {
