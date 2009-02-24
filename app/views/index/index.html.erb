@@ -1,11 +1,10 @@
 <% content_for :head do %>
   <script type="text/javascript">
     document.observe('dom:loaded', function() {
-      DrawDrawDraw.Draw.start();
+      var d = new DrawDrawDraw.Draw('container');
     });
   </script>
 <% end %>
 
-<div id="canvas_container">
 draw anywhere with the mouse
-</div>
+<div id="container"></div>

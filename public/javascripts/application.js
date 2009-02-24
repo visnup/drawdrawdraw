@@ -5,83 +5,87 @@ if (Effect && Effect.DefaultOptions)
 
 var DrawDrawDraw = {};
 
-DrawDrawDraw.Draw = {
-
-  start: function(item_id) {
-    if (!this.canvas)
-      this.setupCanvas();
-
-    this.item_id = item_id;
-    this.container.show();
-
-    return false;
+DrawDrawDraw.Draw = Class.create({
+  initialize: function(div) {
+    this._div = $(div);
+    this._createElements();
+    this._setupObservers();
   },
 
-  stop: function() {
-    if (this.ctx) {
-      if (this.canvas.toDataURL) {
-        var url = this.canvas.toDataURL();
-        this.drawCanvas(url);
+  _createElements: function() {
+    var dim = document.viewport.getDimensions();
+    var top = this._div.cumulativeOffset().top;
+    this._canvas = new Element('canvas', {
+      width: dim.width, height: dim.height - top
+    });
+    this._div.insert(this._canvas);
+  },
 
-        new Ajax.Request('/canvases',
-          { parameters: {'canvas[data]': url, 'canvas[item_id]': this.item_id}
-          });
+  _setupObservers: function() {
+    this._canvas.observe('mousedown', this._mouseDown.bindAsEventListener(this));
+    this._canvas.observe('mouseup', this._mouseUp.bindAsEventListener(this));
+  },
+
+  _mouseDown: function(e) {
+    this._ctx = this._canvas.getContext('2d');
+    this._ctx.beginPath();
+
+    var p = this._getPoint(e);
+    this._ctx.moveTo(p.x, p.y);
+
+    if (!this._boundMouseMove)
+      this._boundMouseMove = this._mouseMove.bindAsEventListener(this);
+    this._canvas.observe('mousemove', this._boundMouseMove);
+  },
+
+  _mouseUp: function(e) {
+    this._canvas.stopObserving('mousemove', this.boundMouseMove);
+    this._save();
+  },
+
+  _mouseMove: function(e) {
+    var p = this._getPoint(e);
+    this._ctx.lineTo(p.x, p.y);
+    this._ctx.stroke();
+  },
+
+  _getPoint: function(e) {
+    var offset = this._canvas.cumulativeOffset();
+    var x = e.pointerX() - offset.left,
+        y = e.pointerY() - offset.top;
+    return { x: x, y: y };
+  },
+
+  _save: function() {
+    if (this._ctx) {
+      if (this._canvas.toDataURL) {
+        var url = this._canvas.toDataURL();
+        this._draw(url);
+        this._clear();
+
+        var params = { 'canvas[data]': url };
+        Object.extend(params, DrawDrawDraw.AuthenticityToken);
+
+        var r = new Ajax.Request('/canvas', {
+          parameters: params
+        });
+      } else {
+        alert("Can't save! Oh NO!");
       }
-
-      this.container.hide();
     }
 
     return false;
   },
 
-  setupCanvas: function() {
-    var v = document.viewport.getDimensions();
-    this.canvas = new Element('canvas',
-      {id: 'canvas', width: v.width, height: v.height, 'class': 'canvas'});
-    this.container = $('canvas_container');
-    this.container.insert(this.canvas);
-
-    Event.observe(this.canvas, 'mousedown', this.mouseDown.bindAsEventListener(this));
-    Event.observe(this.canvas, 'mouseup', this.mouseUp.bindAsEventListener(this));
-  },
-
-  mouseDown: function(e) {
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.beginPath();
-
-    var p = this.getPoint(e);
-    this.ctx.moveTo(p.x, p.y);
-
-    if (!this.boundMouseMove)
-      this.boundMouseMove = this.mouseMove.bindAsEventListener(this);
-    Event.observe(this.canvas, 'mousemove', this.boundMouseMove);
-  },
-
-  mouseUp: function(e) {
-    Event.stopObserving(this.canvas, 'mousemove', this.boundMouseMove);
-  },
-
-  mouseMove: function(e) {
-    var p = this.getPoint(e);
-    this.ctx.lineTo(p.x, p.y);
-    this.ctx.stroke();
-  },
-
-  getPoint: function(e) {
-    var offset = this.canvas.cumulativeOffset();
-    var x = e.pointerX() - offset.left,
-        y = e.pointerY() - offset.top;
-    return {x: x, y: y}
+  _clear: function() {
+    var dim = this._canvas.getDimensions();
+    this._ctx.clearRect(0, 0, dim.width, dim.height);
   },
   
-  drawCanvas: function(url) {
-    $('page').absolutize();
-    $('page').style.zIndex = 2;
-    $('header').absolutize();
-    $('header').style.zIndex = 3;
-    var img = new Element('img',
-      {src: url, style: 'z-index: 1;', 'class': 'canvas'});
-    document.body.insert(img);
+  _draw: function(url) {
+    var img = new Element('img', {
+      src: url, 'class': 'canvas'
+    });
+    this._div.insert(img);
   }
-
-};
+});
