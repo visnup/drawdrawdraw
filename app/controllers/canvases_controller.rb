@@ -4,7 +4,8 @@ class CanvasesController < ApplicationController
   def index
     @canvases =
       if params[:since]
-        Canvas.find(:all, :conditions => ['created_at > ?', params[:since]])
+        since = Time.parse(params[:since])
+        Canvas.find(:all, :conditions => ['created_at > ?', since])
       else
         Canvas.find(:all)
       end
