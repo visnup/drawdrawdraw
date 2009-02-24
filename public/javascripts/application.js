@@ -3,6 +3,11 @@
 if (Effect && Effect.DefaultOptions)
   Effect.DefaultOptions.duration = 0.2;
 
+String.prototype.toDate = function() {
+  var k = this.match(/([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/)
+  return new Date(Date.UTC(k[1],k[2]-1,k[3],k[4],k[5],k[6]));
+};
+
 var DrawDrawDraw = {};
 
 DrawDrawDraw.Draw = Class.create({
@@ -90,11 +95,11 @@ DrawDrawDraw.Draw = Class.create({
   _update: function() {
     new Ajax.Request('/canvases.json', {
       method: 'GET',
-      params: { since: this._since },
+      parameters: { since: this._since },
       onSuccess: function(t) {
         t.responseJSON.each(function(canvas) {
           this._draw(canvas.canvas.data);
-          this._since = canvas.canvas.created_at;
+          this._since = canvas.canvas.created_at.toDate();
         }, this);
       }.bind(this)
     });
