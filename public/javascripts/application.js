@@ -22,6 +22,10 @@ DrawDrawDraw.Draw = Class.create({
     }
   },
 
+  setColor: function(c) {
+    this._ctx.strokeStyle = c;
+  },
+
   _createElements: function() {
     var dim = document.viewport.getDimensions();
     var top = this._div.cumulativeOffset().top;
@@ -29,6 +33,8 @@ DrawDrawDraw.Draw = Class.create({
       width: dim.width, height: dim.height - top
     });
     this._div.insert(this._canvas);
+
+    this._ctx = this._canvas.getContext('2d');
   },
 
   _setupObservers: function() {
@@ -37,7 +43,6 @@ DrawDrawDraw.Draw = Class.create({
   },
 
   _mouseDown: function(e) {
-    this._ctx = this._canvas.getContext('2d');
     this._ctx.beginPath();
 
     var p = this._getPoint(e);
@@ -67,21 +72,19 @@ DrawDrawDraw.Draw = Class.create({
   },
 
   _save: function() {
-    if (this._ctx) {
-      if (this._canvas.toDataURL) {
-        var url = this._canvas.toDataURL();
-        this._draw(url);
-        this._clear();
+    if (this._canvas.toDataURL) {
+      var url = this._canvas.toDataURL();
+      this._draw(url);
+      this._clear();
 
-        var params = { 'canvas[data]': url };
-        Object.extend(params, DrawDrawDraw.AuthenticityToken);
+      var params = { 'canvas[data]': url };
+      Object.extend(params, DrawDrawDraw.AuthenticityToken);
 
-        var r = new Ajax.Request('/canvases.json', {
-          parameters: params
-        });
-      } else {
-        alert("Can't save! Oh NO!");
-      }
+      var r = new Ajax.Request('/canvases.json', {
+        parameters: params
+      });
+    } else {
+      alert("Can't save! Oh NO!");
     }
 
     return false;

@@ -1,20 +1,24 @@
 body
   :font-family helvetica, arial, sans-serif
-  :text-align center
   :padding 0px
   :margin 0px
 
-#container
-  :cursor crosshair !important
-  :position relative
+#colors
+  :border-collapse collapse
+  :position absolute
+  :z-index 20
+  .swatch
+    :width 10px
+    :height 10px
+    :cursor pointer
 
+#container
+  :position relative
   canvas, img.canvas
     :position absolute
     :left 0px
     :top 0px
-
   canvas
     :z-index 10
-
   img.canvas
     :z-index 1

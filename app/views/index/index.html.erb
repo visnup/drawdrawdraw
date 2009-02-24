@@ -1,14 +1,73 @@
 <% content_for :head do %>
   <script type="text/javascript">
     document.observe('dom:loaded', function() {
+      var COLORS = [ null , "#ffffff", "#f2f2f2", "#e4e4e4", "#d7d7d7", "#c9c9c9", "#bcbcbc",
+      "#aeaeae", "#a1a1a1", "#949494", "#868686", "#797979", "#6b6b6b", "#5e5e5e",
+      "#515151", "#434343", "#363636", "#282828", "#1b1b1b", "#0d0d0d", "#000000",
+      "#820819", "#500219", "#470045", "#210046", "#180c48", "#0d0047", "#18226f",
+      "#1d3c79", "#265c94", "#1d555d", "#164d28", "#185b19", "#1c6b04", "#467b0a",
+      "#8a9512", "#aba416", "#a86613", "#a34b12", "#9d1a11", "#990d11", "#70080a",
+      "#941128", "#610029", "#580057", "#310058", "#1e0d4f", "#1a0059", "#1e3581",
+      "#274b85", "#2e6ea7", "#226168", "#18542c", "#1c6824", "#267d1b", "#578e1a",
+      "#9da91a", "#beb71c", "#bb791e", "#b65d1a", "#b02919", "#ac1618", "#821517",
+      "#a61439", "#73003a", "#6a0f69", "#42116a", "#200d56", "#23146b", "#234794",
+      "#335b93", "#3781ba", "#286f74", "#1a5c31", "#20772f", "#31902b", "#69a128",
+      "#b0bc20", "#d1cb23", "#ce8c29", "#c96f1f", "#c23a1f", "#be1b1f", "#941d20",
+      "#b8174a", "#85004c", "#7c177b", "#541c7d", "#230c5d", "#2d1f7d", "#2959a7",
+      "#406ba0", "#4093cd", "#2d7c80", "#1c6235", "#25853b", "#3da33c", "#7bb535",
+      "#c3d027", "#e5de29", "#e19f35", "#dc8225", "#d54b27", "#d12126", "#a6252a",
+      "#cb195c", "#97005e", "#8e208d", "#65268f", "#250d63", "#372b90", "#2e6cba",
+      "#4f7bad", "#4aa6e0", "#33888b", "#1e693a", "#299347", "#4ab64c", "#8dc843",
+      "#d6e32e", "#f8f230", "#f4b242", "#ef952b", "#e85d2e", "#e3262e", "#b82e33",
+      "#cf2d6b", "#a1186d", "#993798", "#743d9a", "#382972", "#49409b", "#397ac1",
+      "#5e8bbb", "#56afe3", "#419396", "#2c774c", "#349d58", "#59bd5d", "#98ce54",
+      "#dae63f", "#f8f440", "#f5ba53", "#f0a03c", "#e96c40", "#e53840", "#bf4046",
+      "#d4427b", "#aa317c", "#a34ea3", "#8252a5", "#4c3f81", "#5b55a6", "#4888c7",
+      "#6d9bc8", "#65b8e6", "#529fa2", "#3f865f", "#44a86a", "#69c56e", "#a3d366",
+      "#dee952", "#f9f552", "#f6c265", "#f2aa4f", "#ec7d53", "#e84c52", "#c55459",
+      "#d9598a", "#b44a8c", "#ae63ae", "#9167b0", "#615790", "#6e69b0", "#5b96ce",
+      "#7dabd5", "#75c0ea", "#65abad", "#549571", "#58b27b", "#7bcc7f", "#aed978",
+      "#e1ec65", "#f9f766", "#f6c976", "#f3b564", "#ed8c67", "#e96067", "#cb686c",
+      "#de6f9a", "#be629c", "#ba78b9", "#a07cbb", "#766e9f", "#827ebb", "#6fa5d5",
+      "#8dbde3", "#87c9ed", "#78b6b8", "#6ba385", "#6dbd8d", "#8cd391", "#b9df8b",
+      "#e5ef7a", "#faf97b", "#f8d188", "#f4bf78", "#ef9b7c", "#ec767b", "#d27c80",
+      "#e386ab", "#c87bac", "#c48ec5", "#b091c5", "#8c85af", "#9693c6", "#85b3db",
+      "#9dcdf1", "#9ad2ef", "#8ec2c3", "#81b198", "#84c89f", "#9edba2", "#c4e39d",
+      "#eaf38e", "#fbf98e", "#f9d89c", "#f6c98d", "#f2ac90", "#ef8b90", "#da9194",
+      "#e89dbb", "#d294bc", "#d0a4d1", "#bfa7d1", "#a19cbe", "#aaa7d1", "#9bc2e3",
+      "#aeddfe", "#addbf2", "#a3cdcf", "#99c0ac", "#9bd3b1", "#b0e2b4", "#cfe9b0",
+      "#eef5a4", "#fcfba4", "#fae0ae", "#f8d4a3", "#f4bca5", "#f2a2a5", "#e1a6a9"];
+
       var d = new DrawDrawDraw.Draw({
         div: 'container',
         interval: 1500
+      });
+
+      var colors = $('colors').down('tbody');
+      COLORS.inGroupsOf(21).each(function(row) {
+        var tr = new Element('tr');
+        row.each(function(c) {
+          var td = new Element('td', { 'class': 'swatch' });
+          td.setStyle({ backgroundColor: c });
+          tr.insert(td);
+        });
+        colors.insert(tr);
+      });
+      $('colors').observe('click', function(e) {
+        var swatch = e.element();
+        var c = swatch.getStyle('backgroundColor');
+        d.setColor(c);
+        $('colors').fade();
       });
     });
   </script>
 <% end %>
 
-draw anywhere with the mouse
+<%= link_to_function 'colors', "$('colors').toggle('appear')" %>
 <%= link_to 'clear', clear_canvases_path %>
+<table id="colors" style="display: none;">
+  <tbody>
+  </tbody>
+</table>
+
 <div id="container"></div>
