@@ -6,3 +6,10 @@ vendor/plugins/haml:
   type: git
   revision: 5422ff5cb95e9c198a6e54b0e907726b0b6fae22
   remote: braid/vendor/plugins/haml
+vendor/rails: 
+  squashed: true
+  url: git://github.com/rails/rails.git
+  branch: master
+  type: git
+  revision: e56b3e4c0b60b2b86f5ca9c5e5a0b22fa34d37ab
+  remote: braid/vendor/rails
