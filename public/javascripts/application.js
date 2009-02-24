@@ -6,10 +6,15 @@ if (Effect && Effect.DefaultOptions)
 var DrawDrawDraw = {};
 
 DrawDrawDraw.Draw = Class.create({
-  initialize: function(div) {
-    this._div = $(div);
+  initialize: function(options) {
+    this._div = $(options.div);
     this._createElements();
     this._setupObservers();
+    this._update();
+
+    if (options.interval) {
+      setInterval(this._update.bind(this), options.interval);
+    }
   },
 
   _createElements: function() {
@@ -66,7 +71,7 @@ DrawDrawDraw.Draw = Class.create({
         var params = { 'canvas[data]': url };
         Object.extend(params, DrawDrawDraw.AuthenticityToken);
 
-        var r = new Ajax.Request('/canvases', {
+        var r = new Ajax.Request('/canvases.json', {
           parameters: params
         });
       } else {
@@ -80,6 +85,19 @@ DrawDrawDraw.Draw = Class.create({
   _clear: function() {
     var dim = this._canvas.getDimensions();
     this._ctx.clearRect(0, 0, dim.width, dim.height);
+  },
+
+  _update: function() {
+    new Ajax.Request('/canvases.json', {
+      method: 'GET',
+      params: { since: this._since },
+      onSuccess: function(t) {
+        t.responseJSON.each(function(canvas) {
+          this._draw(canvas.canvas.data);
+          this._since = canvas.canvas.created_at;
+        }, this);
+      }.bind(this)
+    });
   },
   
   _draw: function(url) {

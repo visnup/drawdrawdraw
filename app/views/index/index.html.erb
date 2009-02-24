@@ -1,14 +1,14 @@
 <% content_for :head do %>
   <script type="text/javascript">
     document.observe('dom:loaded', function() {
-      var d = new DrawDrawDraw.Draw('container');
+      var d = new DrawDrawDraw.Draw({
+        div: 'container',
+        interval: 1500
+      });
     });
   </script>
 <% end %>
 
 draw anywhere with the mouse
-<div id="container">
-  <% Canvas.all.each do |c| %>
-    <img src="<%= c.data %>" class="canvas"/>
-  <% end %>
-</div>
+<%= link_to 'clear', clear_canvases_path %>
+<div id="container"></div>

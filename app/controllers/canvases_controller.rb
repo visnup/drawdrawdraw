@@ -2,11 +2,17 @@ class CanvasesController < ApplicationController
   # GET /canvases
   # GET /canvases.xml
   def index
-    @canvases = Canvas.find(:all)
+    @canvases =
+      if params[:since]
+        Canvas.find(:all, :conditions => ['created_at > ?', params[:since]])
+      else
+        Canvas.find(:all)
+      end
 
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @canvases }
+      format.json { render :json => @canvases }
     end
   end
 
@@ -47,9 +53,11 @@ class CanvasesController < ApplicationController
         flash[:notice] = 'Canvas was successfully created.'
         format.html { redirect_to(@canvas) }
         format.xml  { render :xml => @canvas, :status => :created, :location => @canvas }
+        format.json { render :json => @canvas, :status => :created, :location => @canvas }
       else
         format.html { render :action => "new" }
         format.xml  { render :xml => @canvas.errors, :status => :unprocessable_entity }
+        format.json { render :json => @canvas.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -79,6 +87,15 @@ class CanvasesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to(canvases_url) }
+      format.xml  { head :ok }
+    end
+  end
+
+  def clear
+    Canvas.delete_all
+
+    respond_to do |format|
+      format.html { redirect_to(root_url) }
       format.xml  { head :ok }
     end
   end
