@@ -7,4 +7,8 @@
 <% end %>
 
 draw anywhere with the mouse
-<div id="container"></div>
+<div id="container">
+  <% Canvas.all.each do |c| %>
+    <img src="<%= c.data %>" class="canvas"/>
+  <% end %>
+</div>

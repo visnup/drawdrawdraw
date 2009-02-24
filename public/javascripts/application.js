@@ -66,7 +66,7 @@ DrawDrawDraw.Draw = Class.create({
         var params = { 'canvas[data]': url };
         Object.extend(params, DrawDrawDraw.AuthenticityToken);
 
-        var r = new Ajax.Request('/canvas', {
+        var r = new Ajax.Request('/canvases', {
           parameters: params
         });
       } else {
