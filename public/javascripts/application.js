@@ -104,10 +104,19 @@ DrawDrawDraw.Draw = Class.create({
       }.bind(this);
     }
 
+    if (!this._updateFailure) {
+      this._updateFailure = function(t) {
+        if (t.status == 417) {  // clear on expectation failed
+          this._div.select('img.canvas').invoke('remove');
+        }
+      }.bind(this);
+    }
+
     new Ajax.Request('/canvases.json', {
       method: 'GET',
       parameters: { since: this._since },
-      onSuccess: this._updateSuccess
+      onSuccess: this._updateSuccess,
+      onFailure: this._updateFailure
     });
   },
   

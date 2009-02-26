@@ -12,8 +12,13 @@ class CanvasesController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @canvases }
-      format.json { render :json => @canvases }
+      if Canvas.count > 0
+        format.xml  { render :xml => @canvases }
+        format.json { render :json => @canvases }
+      else
+        format.xml  { render :xml => @canvases, :status => :expectation_failed }
+        format.json { render :json => @canvases, :status => :expectation_failed }
+      end
     end
   end
 
