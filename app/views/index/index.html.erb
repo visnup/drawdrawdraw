@@ -53,17 +53,23 @@
         });
         colors.insert(tr);
       });
+
       $('colors').observe('click', function(e) {
         var swatch = e.element();
         var c = swatch.getStyle('backgroundColor');
-        d.setColor(c);
+        d.setStrokeStyle(c);
         $('colors').fade();
+      });
+
+      $('line_width').observe('change', function(e) {
+        d.setLineWidth(this.value);
       });
     });
   </script>
 <% end %>
 
 <%= button_to 'clear', clear_canvases_path, :class => 'clear' %>
+<%= select_tag :line_width, options_for_select(1 .. 10) %>
 <%= button_to_function 'colors', "$('colors').toggle('appear')" %>
 <table id="colors" style="display: none;">
   <tbody>

@@ -18,8 +18,12 @@ DrawDrawDraw.Draw = Class.create({
     }
   },
 
-  setColor: function(c) {
-    this._ctx.strokeStyle = c;
+  setStrokeStyle: function(s) {
+    this._ctx.strokeStyle = s;
+  },
+
+  setLineWidth: function(w) {
+    this._ctx.lineWidth = w;
   },
 
   _createElements: function() {
