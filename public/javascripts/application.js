@@ -8,6 +8,7 @@ var DrawDrawDraw = {};
 DrawDrawDraw.Draw = Class.create({
   initialize: function(options) {
     this._div = $(options.div);
+    this._canvases = {};
     this._createElements();
     this._setupObservers();
     this._update();
@@ -70,11 +71,11 @@ DrawDrawDraw.Draw = Class.create({
 
   _save: function() {
     if (this._canvas.toDataURL) {
-      var url = this._canvas.toDataURL();
-      this._draw(url);
+      var data = this._canvas.toDataURL();
+      this._draw(data);
       this._clear();
 
-      var params = { 'canvas[data]': url };
+      var params = { 'canvas[data]': data };
       Object.extend(params, DrawDrawDraw.AuthenticityToken);
       var r = new Ajax.Request('/canvases.json', {
         parameters: params
@@ -90,22 +91,30 @@ DrawDrawDraw.Draw = Class.create({
   },
 
   _update: function() {
-    new Ajax.Request('/canvases.json', {
-      method: 'GET',
-      parameters: { since: this._since },
-      onSuccess: function(t) {
+    if (!this._updateSuccess) {
+      this._updateSuccess = function(t) {
         t.responseJSON.each(function(canvas) {
           this._draw(canvas.canvas.data);
           this._since = canvas.canvas.created_at;
         }, this);
-      }.bind(this)
+      }.bind(this);
+    }
+
+    new Ajax.Request('/canvases.json', {
+      method: 'GET',
+      parameters: { since: this._since },
+      onSuccess: this._updateSuccess
     });
   },
   
   _draw: function(url) {
-    var img = new Element('img', {
-      src: url, 'class': 'canvas'
-    });
-    this._div.insert(img);
+    if (!this._canvases[url]) {
+      this._canvases[url] = true;
+
+      var img = new Element('img', {
+        src: url, 'class': 'canvas'
+      });
+      this._div.insert(img);
+    }
   }
 });
